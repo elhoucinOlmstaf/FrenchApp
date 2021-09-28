@@ -5,8 +5,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
 import ShowScreenSections from "../Screens/ShowScreenSections";
 import { createStackNavigator } from "@react-navigation/stack";
-import PracticeScreen from "../Screens/PracticeScreen";
-import ShowPracticeScreen from "../Screens/ShowPracticeScreen";
+import AlphabetPracticeCategory from "../Screens/AphabetScreens/AlphabetPracticeCategory";
+import AlphabtePracticeSCREEN from "../Screens/AphabetScreens/AlphabtePracticeSCREEN";
 const Stack = createStackNavigator();
 const StackApp = () => {
   return (
@@ -19,8 +19,17 @@ const StackApp = () => {
             headerShown: false,
           }}
         />
-        <Stack.Screen name="PracticeScreen" component={PracticeScreen} />
-        <Stack.Screen name="ShowPracticeScreen" component={ShowPracticeScreen} />
+        <Stack.Screen
+          name="AlphabetPracticeCategory"
+          component={AlphabetPracticeCategory}
+        />
+        <Stack.Screen
+          name="AlphabtePracticeSCREEN"
+          component={AlphabtePracticeSCREEN}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="ShowScreenSections"
           component={ShowScreenSections}
