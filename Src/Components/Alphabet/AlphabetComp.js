@@ -36,55 +36,61 @@ const AlphabetComp = () => {
   }, [sound]);
 
   return (
-    <View style={{ width, height, backgroundColor: "#1f233c"  ,   }}>
+    <View style={{ width, height, backgroundColor: "#1f233c" }}>
       <Button title="Practice" color="orange" onPress={MoveToPractice} />
-     <View style={{ marginBottom:100 ,}}>
-     <FlatList
-        data={AlphabetData}
-        numColumns={2}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => {
-          return (
-            <View
-              style={{
-                backgroundColor: "#1f233c",
-                width: width / 2,
-                height: width / 3,
-                paddingBottom:100
-              }}
-            >
+      <View style={{ marginBottom: 100 }}>
+        <FlatList
+          data={AlphabetData}
+          numColumns={2}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => {
+            return (
               <View
                 style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: 150,
-                  borderWidth: 0.5,
-                  borderColor: "grey",
+                  backgroundColor: "#1f233c",
+                  width: width / 2,
+                  height: width / 3,
+                  paddingBottom: 100,
                 }}
               >
-                <Text
+                <View
                   style={{
-                    color: "#fff",
-                    fontSize: 40,
-                    fontWeight: "bold",
-                    fontStyle: "italic",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: width / 2,
+                    borderWidth: 0.5,
+                    borderColor: "grey",
                   }}
                 >
-                  {item.name}
-                </Text>
-                <View style={{ position: "absolute", bottom: 15, left: 5 }}>
-                  <TouchableOpacity onPress={() => playSound(item.audio)}>
-                    <AntDesign name="play" size={30} color="yellow" />
-                  </TouchableOpacity>
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontSize: 40,
+                      fontWeight: "bold",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    {item.name}
+                  </Text>
+                  <View
+                    style={{
+                     position: "relative",
+                     left: "35%",
+                     bottom: "9%"
+                    }}
+                  >
+                    <TouchableOpacity onPress={() => playSound(item.audio)}>
+                      <AntDesign name="play" size={30} color="yellow" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          );
-        }}
-      />
-     </View>
+            );
+          }}
+        />
+      </View>
     </View>
   );
 };
-const { width , height} = Dimensions.get("window")
+const { width, height } = Dimensions.get("window");
 export default AlphabetComp;
