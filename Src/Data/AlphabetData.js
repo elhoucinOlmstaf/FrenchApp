@@ -38,7 +38,7 @@ const AlphabetData = [
   {
     name: "G g",
      audio: require("../Audios/raw/fr_alpha_g.mp3"),
-     options: ["M m" ,"F f" ,"G g" ,"G g"] ,
+     options: ["M m" ,"F f" ,"J j" ,"G g"] ,
      CorrectOption:"G g"
   },
   {
@@ -68,6 +68,8 @@ const AlphabetData = [
   {
     name: "L l",
      audio: require("../Audios/raw/fr_alpha_l.mp3"),
+     options: ["N n" ,"L l" ,"P p" ,"K k"] ,
+     CorrectOption:"L l"
   },
   {
     name: "M m",
@@ -96,41 +98,51 @@ const AlphabetData = [
   {
     name: "Q q",
      audio: require("../Audios/raw/fr_alpha_q.mp3"),
+     options: ["J j" ,"K k" ,"C c" ,"Q q"] ,
   },
   {
     name: "R r",
      audio: require("../Audios/raw/fr_alpha_r.mp3"),
+     options: ["J j" ,"R r" ,"D d" ,"A a"] ,
   },
   {
     name: "S s",
      audio: require("../Audios/raw/fr_alpha_s.mp3"),
+     options: ["S s" ,"C c" ,"F f" ,"V v"] ,
   },
   {
     name: "T t",
      audio: require("../Audios/raw/fr_alpha_t.mp3"),
+     options: ["M m" ,"O o" ,"L l" ,"T t"] ,
   },
   {
     name: "U u",
      audio: require("../Audios/raw/fr_alpha_u.mp3"),
+     options: ["R r" ,"U u" ,"D d" ,"T t"] ,
   },
   {
     name: "V v",
      audio: require("../Audios/raw/fr_alpha_v.mp3"),
+     options: ["N n" ,"V v" ,"C c" ,"K k"] ,
   },
   {
     name: "W w",
      audio: require("../Audios/raw/fr_alpha_w.mp3"),
+     options: ["B b" ,"O o" ,"W w" ,"N n"] ,
   },
    {
     name: "X x",
      audio: require("../Audios/raw/fr_alpha_x.mp3"),
+     options: ["W w" ,"E e" ,"C c" ,"X x"] ,
   },
   {
     name: "Y y",
      audio: require("../Audios/raw/fr_alpha_y.mp3"),
+     options: ["Y y" ,"O o" ,"C c" ,"K k"] ,
   }, {
     name: "Z z",
      audio: require("../Audios/raw/fr_alpha_z.mp3"),
+     options: ["J j" ,"Z z" ,"C c" ,"K k"] ,
   }
 ];
 

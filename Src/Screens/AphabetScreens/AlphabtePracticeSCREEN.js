@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -11,27 +11,41 @@ import { AntDesign } from "@expo/vector-icons";
 import { Center, Text, Progress, VStack, Icon } from "native-base";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AlphabetData from "../../Data/AlphabetData";
+import PracticeCompletedAnimation from "../../LottieComp/PracticeCompletedAnimation";
 const AlphabtePracticeSCREEN = () => {
   let [QuestionIndex, setQuestionIndex] = useState(0);
-  let [Sound, setSound] = useState("");
+  let [Sound, setSound] = useState();
+  let [PracticeSound, setPracticeSound] = useState();
   let [score, setScore] = useState(0);
   let [showNextBtn, setshowNextBtn] = useState(false);
   let [CureentOptionSelected, setCureentOptionSelected] = useState(null);
   let [CurrecttOption, setCurrecttOption] = useState(null);
   let [IsOptiomDiabled, setIsOptiomDiabled] = useState(null);
+  let [IsPracticeCompleted, setIsPracticeCompleted] = useState(false);
+  let [WrongAudio, setWrongAudio] = useState();
+  let [RightAudio, setRightAudio] = useState();
+
+
+  // rest some options
+  const reset = () => {
+    setCureentOptionSelected(null);
+    setCurrecttOption(null);
+    setIsOptiomDiabled(false);
+    setshowNextBtn(false);
+  };
+
   //check answer function
   const CheckAnswer = (selectedOption) => {
     const CorrectAnswer = AlphabetData[QuestionIndex].name;
     setCureentOptionSelected(selectedOption);
     setCurrecttOption(CorrectAnswer);
     setIsOptiomDiabled(true);
+    setshowNextBtn(true);
     if (selectedOption == CorrectAnswer) {
+      RightAudioF();
       setScore(score + 1);
-      setshowNextBtn(true);
-      // setQuestionIndex(QuestionIndex + 1);
     } else {
-      alert("wrong");
-      setshowNextBtn(true);
+      WrongAudioF();
     }
   };
 
@@ -42,16 +56,57 @@ const AlphabtePracticeSCREEN = () => {
     );
     setSound(sound);
     await sound.playAsync();
-    console.log(Sound);
   };
+
   // Continue Button
-  const ContinueButton = ()=> {
-    // code goes here
-  }
+  const NextQuestion = async () => {
+    if (QuestionIndex === AlphabetData.length - 1) {
+      setIsPracticeCompleted(true);
+    } else {
+      setQuestionIndex(QuestionIndex + 1);
+      reset();
+      const { sound } = await Audio.Sound.createAsync(
+        AlphabetData[QuestionIndex + 1].audio
+      );
+      setSound(sound);
+      await sound.playAsync();
+    }
+  };
+
+  // [lay wrong answer ]
+  const WrongAudioF = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../../Audios/PracticeSounds/lesson_failed.mp3")
+    );
+    setWrongAudio(sound);
+    await sound.playAsync();
+  };
+  const RightAudioF = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../../Audios/PracticeSounds/right_answer.mp3")
+    );
+    setRightAudio(sound);
+    await sound.playAsync();
+  };
+
+
+  useEffect(() => {
+    return Sound
+      ? () => {
+          console.log("Unloading Sound");
+          Sound.unloadAsync();
+        }
+      : undefined;
+  }, [Sound]);
 
   return (
     <SafeAreaView>
       <View style={styles.container}>
+        {IsPracticeCompleted ? (
+          <View style={{ backgroundColor: "#1f233c", height: height }}>
+            <PracticeCompletedAnimation score={score} />
+          </View>
+        ) : null}
         <View style={styles.Header}>
           <Center p="5">
             <Text color="white" fontSize="xl" bold>
@@ -87,6 +142,7 @@ const AlphabtePracticeSCREEN = () => {
             renderItem={({ item }) => {
               return (
                 <TouchableOpacity
+                  disabled={IsOptiomDiabled}
                   onPress={() => CheckAnswer(item)}
                   style={{
                     // backgroundColor: "red",
@@ -126,18 +182,17 @@ const AlphabtePracticeSCREEN = () => {
             }}
           />
         </View>
-        <View>
+        <View style={{ backgroundColor: "#1f233c" }}>
           {showNextBtn ? (
-            <TouchableOpacity style={styles.Button}>
+            <TouchableOpacity style={styles.Button} onPress={NextQuestion}>
               <Text
                 style={{
                   color:
-                    CurrecttOption ==  CureentOptionSelected
-                      ? "green"
-                      :
-                     "red" ,
+                    CurrecttOption == CureentOptionSelected ? "green" : "red",
 
                   alignSelf: "center",
+                  fontWeight: "bold",
+                  fontSize: 22,
                 }}
               >
                 Continue
@@ -163,7 +218,8 @@ const styles = StyleSheet.create({
   },
   Body: {
     width: width,
-    marginTop: height - height + 20,
+
+    height: "auto",
   },
   title: {
     fontSize: 32,
@@ -171,10 +227,11 @@ const styles = StyleSheet.create({
   Button: {
     justifyContent: "center",
     marginTop: 50,
-    backgroundColor: "#1f23",
+    backgroundColor: "#36415f",
     width: width / 2.5,
     padding: 10,
     alignSelf: "flex-end",
     marginRight: "5%",
+    borderRadius: 50,
   },
 });
