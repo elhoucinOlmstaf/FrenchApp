@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Svg, { Circle, G } from "react-native-svg";
+import Svg, { Circle } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { useFocusEffect } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
@@ -13,8 +13,22 @@ const AlphabetSVG = () => {
   const center = Size / 2;
   const Radius = Size / 2 - StrokeWidth / 2;
   const CirecumFrence = 2 * Math.PI * Radius;
-  const [Alphabet, setAlphabet] = useState("الحروفا لأبجدية");
-  let [GeneralValues, setGeneralValues] = useState(30);
+  const [Alphabet, setAlphabet] = useState("الحروف لأبجدية");
+  let [GeneralValues, setGeneralValues] = useState(0);
+  // get data from local storage
+  const getData = async () => {
+    const response = await AsyncStorage.getItem("AlphabetPracticeValue");
+    setGeneralValues(response);
+  };
+
+  // getting the data from local storage when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      getData();
+      return () => getData();
+    }, [])
+  );
+
   return (
     <View>
       <Svg height={Size} width={Size}>
@@ -32,17 +46,34 @@ const AlphabetSVG = () => {
           stroke="#fbcf16"
           strokeWidth={StrokeWidth}
           strokeDasharray={CirecumFrence}
-          strokeDashoffset={CirecumFrence - (CirecumFrence * GeneralValues) / 100}
+          strokeDashoffset={
+            CirecumFrence - (CirecumFrence * GeneralValues) / 100
+          }
         />
       </Svg>
       <TouchableOpacity
         onPress={() => navigation.navigate("ShowScreenSections", Alphabet)}
         style={{
           position: "absolute",
-          padding: 13,
+          left: 14,
+          top: 14,
+          backgroundColor: "red",
+          borderRadius: 100,
+          width: 100,
+          height: 100,
         }}
       >
-        <AntDesign name="star" size={100} color="orange" />
+        <AntDesign
+          name="star"
+          size={70}
+          color="orange"
+          style={{
+            alignItems: "center",
+            justifyContent: "center",
+            alignSelf: "center",
+            alignContent:'center'
+          }}
+        />
       </TouchableOpacity>
       <View style={{ alignItems: "center", paddingVertical: 10 }}>
         <Text style={{ fontSize: 18, color: "white" }}>{Alphabet}</Text>

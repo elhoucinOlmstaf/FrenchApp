@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Text,
   View,
@@ -6,34 +6,42 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
+  Animated,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-
 import { Audio } from "expo-av";
 import AlphabetData from "../../Data/AlphabetData";
 // main code
 const AlphabetComp = () => {
   const navigation = useNavigation();
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
+
   //navigation functions
   const MoveToPractice = () => {
     navigation.navigate("AlphabetPracticeCategory");
   };
   const [sound, setSound] = React.useState();
   async function playSound(item) {
-    console.log(item);
     const { sound } = await Audio.Sound.createAsync(item);
     setSound(sound);
     await sound.playAsync();
   }
-
-  React.useEffect(() => {
+  useEffect(() => {
     return sound
       ? () => {
           sound.unloadAsync();
         }
       : undefined;
   }, [sound]);
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   return (
     <View style={{ width, height, backgroundColor: "#1f233c" }}>
@@ -45,12 +53,13 @@ const AlphabetComp = () => {
           keyExtractor={(item) => item.name}
           renderItem={({ item }) => {
             return (
-              <View
+              <Animated.View
                 style={{
                   backgroundColor: "#1f233c",
                   width: width / 2,
                   height: width / 3,
                   paddingBottom: 100,
+                  opacity: fadeAnim,
                 }}
               >
                 <View
@@ -74,17 +83,17 @@ const AlphabetComp = () => {
                   </Text>
                   <View
                     style={{
-                     position: "relative",
-                     left: "35%",
-                     bottom: "9%"
+                      position: "relative",
+                      left: "35%",
+                      bottom: "9%",
                     }}
                   >
                     <TouchableOpacity onPress={() => playSound(item.audio)}>
-                      <AntDesign name="play" size={30} color="yellow" />
+                      <AntDesign name="play" size={35} color="tomato" />
                     </TouchableOpacity>
                   </View>
                 </View>
-              </View>
+              </Animated.View>
             );
           }}
         />

@@ -1,30 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
   Dimensions,
   TouchableOpacity,
   FlatList,
+  Animated,
 } from "react-native";
+import AppLoading from "expo-app-loading";
 import { Audio } from "expo-av";
-import { AntDesign } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Center, Text, Progress, VStack, Icon } from "native-base";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AlphabetData from "../../Data/AlphabetData";
 import PracticeCompletedAnimation from "../../LottieComp/PracticeCompletedAnimation";
-const AlphabtePracticeSCREEN = () => {
+import useFonts from "../../Hooks/Fonts";
+const AlphabtePracticeSCREEN = ({ navigation }) => {
   let [QuestionIndex, setQuestionIndex] = useState(0);
   let [Sound, setSound] = useState();
-  let [PracticeSound, setPracticeSound] = useState();
   let [score, setScore] = useState(0);
   let [showNextBtn, setshowNextBtn] = useState(false);
   let [CureentOptionSelected, setCureentOptionSelected] = useState(null);
   let [CurrecttOption, setCurrecttOption] = useState(null);
   let [IsOptiomDiabled, setIsOptiomDiabled] = useState(null);
   let [IsPracticeCompleted, setIsPracticeCompleted] = useState(false);
-  let [WrongAudio, setWrongAudio] = useState();
-  let [RightAudio, setRightAudio] = useState();
-
+  let [progress, setProgress] = useState(0);
+  let [isPlaying, setIsPlaying] = useState(false);
+  let [AlphabetPracticeScore, setAlphabetPracticeScore] = useState(0);
+  const [IsReady, SetIsReady] = useState(false);
+  //loading fonts
+  const LoadFonts = async () => {
+    await useFonts();
+    console.log("fonts are loading");
+  };
 
   // rest some options
   const reset = () => {
@@ -41,9 +50,11 @@ const AlphabtePracticeSCREEN = () => {
     setCurrecttOption(CorrectAnswer);
     setIsOptiomDiabled(true);
     setshowNextBtn(true);
+    setProgress(((QuestionIndex + 1) / AlphabetData.length) * 100);
     if (selectedOption == CorrectAnswer) {
       RightAudioF();
       setScore(score + 1);
+      console.log(score);
     } else {
       WrongAudioF();
     }
@@ -51,22 +62,44 @@ const AlphabtePracticeSCREEN = () => {
 
   // play audio function
   const PlayAudio = async (audio) => {
-    const { sound } = await Audio.Sound.createAsync(
-      AlphabetData[QuestionIndex].audio
-    );
-    setSound(sound);
-    await sound.playAsync();
+    setIsPlaying(true);
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        AlphabetData[QuestionIndex].audio
+      );
+      setSound(sound);
+      await sound.playAsync();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Continue Button
   const NextQuestion = async () => {
+    if (AlphabetPracticeScore == 100) {
+      setAlphabetPracticeScore(JSON.stringify(100));
+    } else if (AlphabetPracticeScore == 66.66) {
+      setAlphabetPracticeScore(JSON.stringify(66.66));
+    }
     if (QuestionIndex === AlphabetData.length - 1) {
       setIsPracticeCompleted(true);
+      if (score > 0 && score > 8) {
+        let AlphabetValue = JSON.stringify(33.33);
+        AsyncStorage.setItem("AlphabetPracticeValue", AlphabetValue);
+      }
+      if (score > 8 && score > 22) {
+        let AlphabetValue = JSON.stringify(66.66);
+        AsyncStorage.setItem("AlphabetPracticeValue", AlphabetValue);
+      }
+      if (score > 22) {
+        let AlphabetValue = JSON.stringify(100);
+        AsyncStorage.setItem("AlphabetPracticeValue", AlphabetValue);
+      }
     } else {
       setQuestionIndex(QuestionIndex + 1);
       reset();
       const { sound } = await Audio.Sound.createAsync(
-        AlphabetData[QuestionIndex + 1].audio
+        AlphabetData[QuestionIndex + 1].Audio
       );
       setSound(sound);
       await sound.playAsync();
@@ -75,29 +108,60 @@ const AlphabtePracticeSCREEN = () => {
 
   // [lay wrong answer ]
   const WrongAudioF = async () => {
-    const { sound } = await Audio.Sound.createAsync(
-      require("../../Audios/PracticeSounds/lesson_failed.mp3")
-    );
-    setWrongAudio(sound);
-    await sound.playAsync();
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../Audios/PracticeSounds/lesson_failed.mp3")
+      );
+      setSound(sound);
+      await sound.playAsync();
+    } catch (error) {
+      console.log("ops error");
+    }
   };
   const RightAudioF = async () => {
-    const { sound } = await Audio.Sound.createAsync(
-      require("../../Audios/PracticeSounds/right_answer.mp3")
-    );
-    setRightAudio(sound);
-    await sound.playAsync();
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../Audios/PracticeSounds/right_answer.mp3")
+      );
+      setSound(sound);
+      await sound.playAsync();
+    } catch (error) {
+      alert("ops something wrong please close the app and reopen it");
+    }
   };
 
+  // get data from local storage
+  const getData = async () => {
+    const response = await AsyncStorage.getItem("AlphabetPracticeValue");
+    setAlphabetPracticeScore(response);
+  };
 
   useEffect(() => {
+
+    getData();
+    LoadFonts();
+
+    setTimeout(() => {
+
+      setIsPlaying(false);
+    }, 300);
+
     return Sound
       ? () => {
-          console.log("Unloading Sound");
           Sound.unloadAsync();
         }
       : undefined;
   }, [Sound]);
+
+  if (!IsReady) {
+    return (
+      <AppLoading
+        startAsync={LoadFonts}
+        onFinish={() => SetIsReady(true)}
+        onError={() => {}}
+      />
+    );
+  }
 
   return (
     <SafeAreaView>
@@ -109,8 +173,13 @@ const AlphabtePracticeSCREEN = () => {
         ) : null}
         <View style={styles.Header}>
           <Center p="5">
-            <Text color="white" fontSize="xl" bold>
-              Tap The Letter You Hear :
+            <Text
+              color="white"
+              fontSize="2xl"
+              bold
+              style={{ fontFamily: "mummified" }}
+            >
+              اضغط على الحرف الدي تسمعه
             </Text>
           </Center>
           <View style={{ alignItems: "center", paddingBottom: 10 }}>
@@ -120,17 +189,21 @@ const AlphabtePracticeSCREEN = () => {
               bg="tomato"
               style={{ borderRadius: 80 }}
             >
-              <AntDesign
-                onPress={PlayAudio}
-                name="caretright"
-                size={90}
-                color="blue"
-              />
+              {isPlaying ? (
+                <Ionicons name="pause" size={90} color="blue" />
+              ) : (
+                <AntDesign
+                  onPress={PlayAudio}
+                  name="caretright"
+                  size={90}
+                  color="blue"
+                />
+              )}
             </Center>
           </View>
           <View>
             <VStack pt="10">
-              <Progress size="xl" mb={4} value={65} />
+              <Progress size="xl" mb={4} value={progress} />
             </VStack>
           </View>
         </View>
@@ -169,9 +242,8 @@ const AlphabtePracticeSCREEN = () => {
                             : item == CureentOptionSelected
                             ? "red"
                             : "#fff",
-                        fontSize: 40,
+                        fontSize: height / 13,
                         fontWeight: "bold",
-                        fontStyle: "italic",
                       }}
                     >
                       {item}
@@ -191,8 +263,9 @@ const AlphabtePracticeSCREEN = () => {
                     CurrecttOption == CureentOptionSelected ? "green" : "red",
 
                   alignSelf: "center",
-                  fontWeight: "bold",
+
                   fontSize: 22,
+                  fontFamily: "mummified",
                 }}
               >
                 Continue

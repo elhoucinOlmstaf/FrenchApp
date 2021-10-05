@@ -19,6 +19,26 @@ if (passedData === "part 1" &&CurrentQuestion === QuestionData.length - 1) {
   }
 
 
+
+
+<LottieView
+          style={{
+            width: width / 2,
+            height: height / 2,
+          }}
+          autoPlay
+          source={require("../LottieFiles/session_complete_vikram_duo.json")}
+        />
+
+
+
+
+
+
+
+
+
+
 }
 if(passedData === "part 2" &&CurrentQuestion === QuestionData.length - 1){
   if(PART1 == 66.66){

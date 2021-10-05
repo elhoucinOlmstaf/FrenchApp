@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect , useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,43 +6,59 @@ import {
   Dimensions,
   TouchableOpacity,
   Image,
+  BackHandler,
+  Animated
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { AntDesign, Feather } from "@expo/vector-icons";
-
+import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const { width, height } = Dimensions.get("window");
+import { useIsFocused } from "@react-navigation/native";
 const AlphabetPracticeCategory = () => {
   const navigation = useNavigation();
-  let [Part1, setPart1] = useState(0);
-  const part1 = "part 1";
-
+  const isFocused = useIsFocused();
   // getting some data from local storage
-
+  let [AlphabetPracticeScore, setAlphabetPracticeScore] = useState(0);
+  // get data from local storage
   const getData = async () => {
-    try {
-      //Part1
-      const Part1 = await AsyncStorage.getItem("Part1");
-      setPart1(Part1);
-      //Part2
-      const Part2 = await AsyncStorage.getItem("Part2");
-      setPart2(Part2);
-      //Part1
-      const Part3 = await AsyncStorage.getItem("Part3");
-      setPart3(Part3);
-
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {}
+    const response = await AsyncStorage.getItem("AlphabetPracticeValue");
+    setAlphabetPracticeScore(response);
   };
 
-  getData();
+  const backAction = () => {
+    navigation.navigate("ShowScreenSections");
+    return true;
+  };
+  const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
+
+  useEffect(() => {
+    Animated.timing(
+      fadeAnim,
+      {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+
+      }
+    ).start();
+  }, [fadeAnim])
+
+  useEffect(() => {
+    getData();
+    BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+  }, [isFocused]);
+
   return (
-    <View
+    <Animated.View
       style={{
-        backgroundColor:"#1f233c",
+        backgroundColor: "#1f233c",
         width: width,
         height: height,
         paddingTop: height - height + 200,
+        opacity: fadeAnim,
       }}
     >
       <View
@@ -67,32 +83,38 @@ const AlphabetPracticeCategory = () => {
       >
         <View style={styles.BoxContainer}>
           <View style={{ alignSelf: "center" }}>
-            <Text style={{ color: "#fff", fontSize: 20 }}>{part1}</Text>
+            <Text style={{ color: "#fff", fontSize: 20 }}>Listening</Text>
           </View>
           <View style={{ flexDirection: "row", marginRight: 10 }}>
             <AntDesign
               name="star"
-              size={20}
+              size={40}
               color={
-                Part1 == 11.11 || Part1 == 22.66 || Part1 == 33.33
+                AlphabetPracticeScore == 33.33 ||
+                AlphabetPracticeScore == 66.66 ||
+                AlphabetPracticeScore == 100
                   ? "orange"
                   : "grey"
               }
             />
             <AntDesign
               name="star"
-              size={20}
-              color={Part1 == 22.66 || Part1 == 33.33 ? "orange" : "grey"}
+              size={40}
+              color={
+                AlphabetPracticeScore == 66.66 || AlphabetPracticeScore == 100
+                  ? "orange"
+                  : "grey"
+              }
             />
             <AntDesign
               name="star"
-              size={20}
-              color={Part1 == 33.33 ? "orange" : "grey"}
+              size={40}
+              color={AlphabetPracticeScore == 100 ? "orange" : "grey"}
             />
           </View>
         </View>
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 };
 

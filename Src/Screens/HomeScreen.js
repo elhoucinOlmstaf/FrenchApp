@@ -1,11 +1,29 @@
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, BackHandler, View , Alert} from "react-native";
 
 import HomeScreenHeader from "../Components/HomeScreenHeader";
 import HomeScreenSections from "../Components/HomeScreenSections";
-import React , {useState} from "react";
+import React , {useEffect} from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import LocalData from "../Data/LocalData"
+
 const HomeScreen = () => {
+  const backAction = () => {
+    Alert.alert("Hold on!", "Are you sure you want to go back?", [
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel"
+      },
+      { text: "YES", onPress: () => BackHandler.exitApp() }
+    ]);
+    return true;
+  };
+
+  useEffect(() => {
+    BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", backAction);
+  }, []);
 
   return (
     <SafeAreaView>

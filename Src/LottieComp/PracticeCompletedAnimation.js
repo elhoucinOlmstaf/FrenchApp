@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 const PracticeCompletedAnimation = (props) => {
   const navigation = useNavigation();
   let [CompleteAudio, setCompleteAudio] = useState();
+  let [Score , setScore] = useState(props.score)
   const CompletAudioF = async () => {
     const { sound } = await Audio.Sound.createAsync(
       require("../Audios/PracticeSounds/lesson_complete.mp3")
@@ -16,16 +17,19 @@ const PracticeCompletedAnimation = (props) => {
     setCompleteAudio(sound);
     await sound.playAsync();
   };
+  console.log(Score)
+
+ const MoveBack = ()=>{
+  navigation.push("AlphabetPracticeCategory")
+
+ }
 
   useEffect(() => {
     CompletAudioF()
-    return () => {
-      CompleteAudio.unloadAsync()
-    }
   }, [])
   return (
     <>
-      <Center pt="5">
+      <Center pt="10">
         <Text color="tomato" fontSize="4xl" bold>
           مبروك
         </Text>
@@ -77,7 +81,7 @@ const PracticeCompletedAnimation = (props) => {
           </View>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate("HomeScreen")}
+          onPress={() => MoveBack()}
           style={{
             backgroundColor: "skyblue",
             flexDirection: "row",
