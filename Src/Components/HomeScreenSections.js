@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Svg, { Circle, G } from "react-native-svg";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { AntDesign } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { View, Dimensions } from "react-native";
 //--------------------------------------------------------------
 import AlphabetSVG from "./Alphabet/AlphabetSVG";
 import NumberSVG from "./Numbers/NumberSVG";
 //------------------------------------------------------------
 const HomeScreenSections = () => {
-  
+  const { width } = Dimensions.get("window");
+  const Size = width / 3.3;
+  const StrokeWidth = 7;
+  const center = Size / 2;
+  const Radius = Size / 2 - StrokeWidth / 2;
+  const CirecumFrence = 2 * Math.PI * Radius;
   return (
     <View
       style={{
@@ -20,15 +20,25 @@ const HomeScreenSections = () => {
       }}
     >
       <View>
-        <AlphabetSVG />
+        <AlphabetSVG
+          center={center}
+          Radius={Radius}
+          Size={Size}
+          StrokeWidth={StrokeWidth}
+          CirecumFrence={CirecumFrence}
+        />
       </View>
       <View>
-        <NumberSVG />
+        <NumberSVG
+          center={center}
+          Radius={Radius}
+          Size={Size}
+          StrokeWidth={StrokeWidth}
+          CirecumFrence={CirecumFrence}
+        />
       </View>
     </View>
   );
 };
 
 export default HomeScreenSections;
-
-const styles = StyleSheet.create({});

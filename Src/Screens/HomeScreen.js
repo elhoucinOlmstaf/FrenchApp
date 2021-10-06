@@ -1,8 +1,8 @@
-import { Dimensions, StyleSheet, BackHandler, View , Alert} from "react-native";
+import { Dimensions, StyleSheet, BackHandler, View, Alert } from "react-native";
 
 import HomeScreenHeader from "../Components/HomeScreenHeader";
 import HomeScreenSections from "../Components/HomeScreenSections";
-import React , {useEffect} from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
@@ -11,9 +11,9 @@ const HomeScreen = () => {
       {
         text: "Cancel",
         onPress: () => null,
-        style: "cancel"
+        style: "cancel",
       },
-      { text: "YES", onPress: () => BackHandler.exitApp() }
+      { text: "YES", onPress: () => BackHandler.exitApp() },
     ]);
     return true;
   };
@@ -30,7 +30,6 @@ const HomeScreen = () => {
       <View
         style={{ backgroundColor: "#1f233c", width: width, height: height }}
       >
-
         <HomeScreenHeader />
         <View
           style={{
@@ -38,7 +37,7 @@ const HomeScreen = () => {
             borderBottomWidth: 1,
           }}
         />
-        <HomeScreenSections />
+        <HomeScreenSections  />
       </View>
     </SafeAreaView>
   );

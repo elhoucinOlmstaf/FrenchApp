@@ -6,7 +6,6 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
-  ActivityIndicator,
   Animated,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";

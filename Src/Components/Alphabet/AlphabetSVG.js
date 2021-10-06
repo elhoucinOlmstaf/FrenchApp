@@ -1,24 +1,26 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState, useCallback } from "react";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+} from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-import { AntDesign } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import GeneralStyles from "../../styles/GeneralStyles";
 
-const AlphabetSVG = () => {
+const AlphabetSVG = (props) => {
+
   const navigation = useNavigation();
-  const Size = 128;
-  const StrokeWidth = 7;
-  const center = Size / 2;
-  const Radius = Size / 2 - StrokeWidth / 2;
-  const CirecumFrence = 2 * Math.PI * Radius;
   const [Alphabet, setAlphabet] = useState("الحروف لأبجدية");
-  let [GeneralValues, setGeneralValues] = useState(0);
+  let [AlphabetGeneralValues, setAlphabetGeneralValues] = useState(0);
   // get data from local storage
   const getData = async () => {
     const response = await AsyncStorage.getItem("AlphabetPracticeValue");
-    setGeneralValues(response);
+    setAlphabetGeneralValues(response);
   };
 
   // getting the data from local storage when screen is focused
@@ -31,52 +33,37 @@ const AlphabetSVG = () => {
 
   return (
     <View>
-      <Svg height={Size} width={Size}>
+      <Svg height={props.Size} width={props.Size}>
         <Circle
-          cx={center}
-          cy={center}
-          r={Radius}
+          cx={props.center}
+          cy={props.center}
+          r={props.Radius}
           stroke="#70727f"
-          strokeWidth={StrokeWidth}
+          strokeWidth={props.StrokeWidth}
         />
         <Circle
-          cx={center}
-          cy={center}
-          r={Radius}
+          cx={props.center}
+          cy={props.center}
+          r={props.Radius}
           stroke="#fbcf16"
-          strokeWidth={StrokeWidth}
-          strokeDasharray={CirecumFrence}
+          strokeWidth={props.StrokeWidth}
+          strokeDasharray={props.CirecumFrence}
           strokeDashoffset={
-            CirecumFrence - (CirecumFrence * GeneralValues) / 100
+            props.CirecumFrence - (props.CirecumFrence * AlphabetGeneralValues) / 100
           }
         />
       </Svg>
       <TouchableOpacity
         onPress={() => navigation.navigate("ShowScreenSections", Alphabet)}
-        style={{
-          position: "absolute",
-          left: 14,
-          top: 14,
-          backgroundColor: "red",
-          borderRadius: 100,
-          width: 100,
-          height: 100,
-        }}
+        style={GeneralStyles.CircleButton}
       >
-        <AntDesign
-          name="star"
-          size={70}
-          color="orange"
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            alignSelf: "center",
-            alignContent:'center'
-          }}
+        <Image
+          source={require("../../Images/alphabetImage.png")}
+          style={GeneralStyles.SvgImage}
         />
       </TouchableOpacity>
       <View style={{ alignItems: "center", paddingVertical: 10 }}>
-        <Text style={{ fontSize: 18, color: "white" }}>{Alphabet}</Text>
+        <Text style={GeneralStyles.TextTitle}>{Alphabet}</Text>
       </View>
     </View>
   );
