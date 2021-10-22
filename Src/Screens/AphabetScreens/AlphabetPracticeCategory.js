@@ -1,4 +1,4 @@
-import React, { useState, useEffect , useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   Text,
@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
   Image,
   BackHandler,
-  Animated
+  Animated,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const { width, height } = Dimensions.get("window");
 import { useIsFocused } from "@react-navigation/native";
+import GeneralStyles from "../../styles/GeneralStyles";
 const AlphabetPracticeCategory = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -29,19 +30,15 @@ const AlphabetPracticeCategory = () => {
     navigation.navigate("ShowScreenSections");
     return true;
   };
-  const fadeAnim = useRef(new Animated.Value(0)).current  // Initial value for opacity: 0
+  const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
 
   useEffect(() => {
-    Animated.timing(
-      fadeAnim,
-      {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-
-      }
-    ).start();
-  }, [fadeAnim])
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [fadeAnim]);
 
   useEffect(() => {
     getData();
@@ -52,15 +49,7 @@ const AlphabetPracticeCategory = () => {
   }, [isFocused]);
 
   return (
-    <Animated.View
-      style={{
-        backgroundColor: "#1f233c",
-        width: width,
-        height: height,
-        paddingTop: height - height + 200,
-        opacity: fadeAnim,
-      }}
-    >
+    <Animated.View style={GeneralStyles.PracticeContainer}>
       <View
         style={{
           width: 100,
@@ -81,7 +70,7 @@ const AlphabetPracticeCategory = () => {
       <TouchableOpacity
         onPress={() => navigation.navigate("AlphabtePracticeSCREEN")}
       >
-        <View style={styles.BoxContainer}>
+        <View style={GeneralStyles.PracticeBoxContainer}>
           <View style={{ alignSelf: "center" }}>
             <Text style={{ color: "#fff", fontSize: 20 }}>Listening</Text>
           </View>

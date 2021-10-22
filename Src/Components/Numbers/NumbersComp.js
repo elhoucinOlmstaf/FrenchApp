@@ -8,10 +8,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Audio } from "expo-av";
+import { useNavigation } from "@react-navigation/core";
 import NumbersData from "../../Data/NumbersData/NumbersData";
 import { AntDesign } from "@expo/vector-icons";
 import GeneralStyles from "../../styles/GeneralStyles";
 const NumbersComp = () => {
+  let navigation = useNavigation()
   let [Sound, setSound] = useState();
   //play audio sound function
   const PlayAudio = async (item) => {
@@ -23,13 +25,17 @@ const NumbersComp = () => {
     return Sound
       ? () => {
           Sound.unloadAsync();
-          console.log('unloading')
+          console.log("unloading");
         }
       : undefined;
   }, [Sound]);
   return (
     <View style={{ width: width, height: height, backgroundColor: "#1f233c" }}>
-      <Button title="Practice" color="orange" />
+      <Button
+        title="Practice"
+        color="orange"
+        onPress={()=>navigation.navigate("NumbersPracticeCategory")}
+      />
       <View>
         <FlatList
           data={NumbersData}

@@ -64,6 +64,7 @@ const NumbersData = [
     Ar_name: "ثَلَاثَةَ عَشَرَ",
     Audio: require("../../Audios/raw/fr_number_13.mp3"),
   },
+
   {
     Fr_name: "quatorze",
     Ar_name: "أَرْبَعَةَ عَشَرَ",
@@ -86,7 +87,7 @@ const NumbersData = [
   },
   {
     Fr_name: "dix-huit",
-    Ar_name: "ثَمَانِيَةَ عَشَرَ",
+    Ar_name: "سَبْعَةَ عَشَرَ",
     Audio: require("../../Audios/raw/fr_number_18.mp3"),
   },
   {

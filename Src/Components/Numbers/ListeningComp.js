@@ -1,24 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  StyleSheet,
   View,
+  FlatList,
+  StyleSheet,
   Dimensions,
   TouchableOpacity,
-  FlatList,
-  Animated,
 } from "react-native";
-import AppLoading from "expo-app-loading";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { SafeAreaView } from "react-native-safe-area-context";
+import ListeningData from "../../Data/NumbersData/ListeningData";
+import PracticeCompletedAnimation from "../../LottieComp/PracticeCompletedAnimation";
 import { Audio } from "expo-av";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Center, Text, Progress, VStack, Icon } from "native-base";
-import { SafeAreaView } from "react-native-safe-area-context";
-import AlphabetData from "../../Data/AlphabetData";
-import PracticeCompletedAnimation from "../../LottieComp/PracticeCompletedAnimation";
-import useFonts from "../../Hooks/Fonts";
-const AlphabtePracticeSCREEN = ({ navigation }) => {
+import { useNavigation } from "@react-navigation/core";
+
+const ListeningComp = ({ route }) => {
+    const navigation = useNavigation()
+  let Route = route;
   let [QuestionIndex, setQuestionIndex] = useState(0);
   let [Sound, setSound] = useState();
   let [score, setScore] = useState(0);
@@ -30,14 +30,7 @@ const AlphabtePracticeSCREEN = ({ navigation }) => {
   let [progress, setProgress] = useState(0);
   let [isPlaying, setIsPlaying] = useState(false);
   let [AlphabetPracticeScore, setAlphabetPracticeScore] = useState(0);
-  const [IsReady, SetIsReady] = useState(false);
-  //loading fonts
-  const LoadFonts = async () => {
-    await useFonts();
-    console.log("fonts are loading");
-  };
-
-  // rest some options
+  //reste all options
   const reset = () => {
     setCureentOptionSelected(null);
     setCurrecttOption(null);
@@ -45,211 +38,156 @@ const AlphabtePracticeSCREEN = ({ navigation }) => {
     setshowNextBtn(false);
   };
 
-  //check answer function
+  //Play Audio function
+  const PlayAudio = async (item) => {
+    if (Route.params === "Listening") {
+      alert("listening");
+      let { sound } = await Audio.Sound.createAsync(
+        ListeningData[QuestionIndex].Audio
+      );
+      setSound(sound);
+      await sound.playAsync();
+    }
+    if (Route.params === "Reading") {
+      //Reading
+    }
+  };
+
+  //Checking The answer
   const CheckAnswer = (selectedOption) => {
-    const CorrectAnswer = AlphabetData[QuestionIndex].name;
+    const CorrectAnswer = ListeningData[QuestionIndex].Fr_name;
     setCureentOptionSelected(selectedOption);
     setCurrecttOption(CorrectAnswer);
     setIsOptiomDiabled(true);
     setshowNextBtn(true);
-    setProgress(((QuestionIndex + 1) / AlphabetData.length) * 100);
+    setProgress(((QuestionIndex + 1) / ListeningData.length) * 100);
     if (selectedOption == CorrectAnswer) {
-      RightAudioF();
+      Correct_Sound();
       setScore(score + 1);
-      console.log(score);
     } else {
       WrongAudioF();
     }
   };
-
-  // play audio function
-  const PlayAudio = async (audio) => {
-    setIsPlaying(true);
-    try {
-      const { sound } = await Audio.Sound.createAsync(
-        AlphabetData[QuestionIndex].audio
-      );
-      setSound(sound);
-      await sound.playAsync();
-    } catch (error) {
-      console.log(error);
-    }
+  //play correct sound
+  const Correct_Sound = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../../Audios/PracticeSounds/right_answer.mp3")
+    );
+    setSound(sound);
+    await sound.playAsync();
+  };
+  //play wrong sound
+  const WrongAudioF = async () => {
+    const { sound } = await Audio.Sound.createAsync(
+      require("../../Audios/PracticeSounds/lesson_failed.mp3")
+    );
+    setSound(sound);
+    await sound.playAsync();
   };
 
-  // Continue Button
+  // the Next Question Button
   const NextQuestion = async () => {
-    if (AlphabetPracticeScore == 100) {
-      setAlphabetPracticeScore(JSON.stringify(100));
-    } else if (AlphabetPracticeScore == 66.66) {
-      setAlphabetPracticeScore(JSON.stringify(66.66));
-    }
-    if (QuestionIndex === AlphabetData.length - 1) {
+    if (QuestionIndex === ListeningData.length - 1) {
       setIsPracticeCompleted(true);
-      if (score > 0 && score > 8) {
-        let AlphabetValue = JSON.stringify(33.33);
-        AsyncStorage.setItem("AlphabetPracticeValue", AlphabetValue);
-      }
-      if (score > 8 && score > 22) {
-        let AlphabetValue = JSON.stringify(66.66);
-        AsyncStorage.setItem("AlphabetPracticeValue", AlphabetValue);
-      }
-      if (score > 22) {
-        let AlphabetValue = JSON.stringify(100);
-        AsyncStorage.setItem("AlphabetPracticeValue", AlphabetValue);
-      }
     } else {
       setQuestionIndex(QuestionIndex + 1);
       reset();
       const { sound } = await Audio.Sound.createAsync(
-        AlphabetData[QuestionIndex + 1].Audio
+        ListeningData[QuestionIndex + 1].Audio
       );
       setSound(sound);
       await sound.playAsync();
     }
   };
 
-  // [lay wrong answer ]
-  const WrongAudioF = async () => {
-    try {
-      const { sound } = await Audio.Sound.createAsync(
-        require("../../Audios/PracticeSounds/lesson_failed.mp3")
-      );
-      setSound(sound);
-      await sound.playAsync();
-    } catch (error) {
-      console.log("ops error");
-    }
-  };
-  const RightAudioF = async () => {
-    try {
-      const { sound } = await Audio.Sound.createAsync(
-        require("../../Audios/PracticeSounds/right_answer.mp3")
-      );
-      setSound(sound);
-      await sound.playAsync();
-    } catch (error) {
-      alert("ops something wrong please close the app and reopen it");
-    }
-  };
-
-  // get data from local storage
-  const getData = async () => {
-    const response = await AsyncStorage.getItem("AlphabetPracticeValue");
-    setAlphabetPracticeScore(response);
-  };
-
+  // unloading sounds
   useEffect(() => {
-    getData();
-    LoadFonts();
-
-    setTimeout(() => {
-      setIsPlaying(false);
-    }, 300);
-
     return Sound
       ? () => {
           Sound.unloadAsync();
         }
       : undefined;
   }, [Sound]);
-
-  if (!IsReady) {
-    return (
-      <AppLoading
-        startAsync={LoadFonts}
-        onFinish={() => SetIsReady(true)}
-        onError={() => {}}
-      />
-    );
-  }
-
   return (
     <SafeAreaView>
       <View style={styles.container}>
         {IsPracticeCompleted ? (
           <View style={{ backgroundColor: "#1f233c", height: height }}>
-            <View style={{ backgroundColor: "#1f233c", height: height }}>
-              <Center pt="10">
-                <Text color="tomato" fontSize="4xl" bold>
-                  مبروك
-                </Text>
-                <Text color="tomato" fontSize="3xl" bold>
-                  لقد أنهيت الأختبار
-                </Text>
-              </Center>
-              <PracticeCompletedAnimation />
+            <Center pt="10">
+              <Text color="tomato" fontSize="4xl" bold>
+                مبروك
+              </Text>
+              <Text color="tomato" fontSize="3xl" bold>
+                لقد أنهيت الأختبار
+              </Text>
+            </Center>
+            <PracticeCompletedAnimation />
+            <View
+              style={{
+                position: "absolute",
+                bottom: 15,
+                alignSelf: "center",
+              }}
+            >
               <View
                 style={{
-                  position: "absolute",
-                  bottom: 15,
+                  backgroundColor: "tomato",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  padding: 15,
+                  borderRadius: 15,
+                  width: width / 1.1,
+                  alignSelf: "center",
+                  marginVertical: 20,
+                }}
+              >
+                <Text
+                  style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}
+                >
+                  Practice XP
+                </Text>
+                <View style={{ flexDirection: "row" }}>
+                  <MaterialCommunityIcons
+                    style={{ marginRight: 8 }}
+                    name="star-four-points"
+                    size={30}
+                    color="yellow"
+                  />
+                  <Text
+                    style={{
+                      color: "#fff",
+                      fontWeight: "bold",
+                      fontSize: 18,
+                    }}
+                  >
+                    {score}
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity
+                onPress={() => navigation.push("NumbersPracticeCategory")}
+                style={{
+                  backgroundColor: "skyblue",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  padding: 15,
+                  borderRadius: 15,
+                  width: width / 1.1,
                   alignSelf: "center",
                 }}
               >
-                <View
-                  style={{
-                    backgroundColor: "tomato",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    padding: 15,
-                    borderRadius: 15,
-                    width: width / 1.1,
-                    alignSelf: "center",
-                    marginVertical: 20,
-                  }}
+                <Text
+                  style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}
                 >
-                  <Text
-                    style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}
-                  >
-                    Practice XP
-                  </Text>
-                  <View style={{ flexDirection: "row" }}>
-                    <MaterialCommunityIcons
-                      style={{ marginRight: 8 }}
-                      name="star-four-points"
-                      size={30}
-                      color="yellow"
-                    />
-                    <Text
-                      style={{
-                        color: "#fff",
-                        fontWeight: "bold",
-                        fontSize: 18,
-                      }}
-                    >
-                      {score}
-                    </Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                  onPress={() => navigation.push("AlphabetPracticeCategory")}
-                  style={{
-                    backgroundColor: "skyblue",
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    padding: 15,
-                    borderRadius: 15,
-                    width: width / 1.1,
-                    alignSelf: "center",
-                  }}
-                >
-                  <Text
-                    style={{ color: "#fff", fontWeight: "bold", fontSize: 18 }}
-                  >
-                    Continue
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  Continue
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         ) : null}
         <View style={styles.Header}>
           <Center p="5">
-            <Text
-              color="white"
-              fontSize="2xl"
-              bold
-              style={{ fontFamily: "mummified" }}
-            >
+            <Text color="white" fontSize="2xl" bold>
               اضغط على الحرف الدي تسمعه
             </Text>
           </Center>
@@ -280,7 +218,7 @@ const AlphabtePracticeSCREEN = ({ navigation }) => {
         </View>
         <View style={styles.Body}>
           <FlatList
-            data={AlphabetData[QuestionIndex].options}
+            data={ListeningData[QuestionIndex].options}
             keyExtractor={(item) => item}
             numColumns={2}
             renderItem={({ item }) => {
@@ -313,7 +251,7 @@ const AlphabtePracticeSCREEN = ({ navigation }) => {
                             : item == CureentOptionSelected
                             ? "red"
                             : "#fff",
-                        fontSize: height / 13,
+                        fontSize: 27,
                         fontWeight: "bold",
                       }}
                     >
@@ -336,7 +274,7 @@ const AlphabtePracticeSCREEN = ({ navigation }) => {
                   alignSelf: "center",
 
                   fontSize: 22,
-                  fontFamily: "mummified",
+                  // fontFamily: "mummified",
                 }}
               >
                 Continue
@@ -349,7 +287,7 @@ const AlphabtePracticeSCREEN = ({ navigation }) => {
   );
 };
 
-export default AlphabtePracticeSCREEN;
+export default ListeningComp;
 const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
   container: {
@@ -362,7 +300,6 @@ const styles = StyleSheet.create({
   },
   Body: {
     width: width,
-
     height: "auto",
   },
   title: {

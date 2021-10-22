@@ -22,6 +22,23 @@ const GeneralStyles = StyleSheet.create({
     width: 65,
     height: 65,
   },
+  PracticeBoxContainer:{
+    backgroundColor: "#36415f",
+    padding: 30,
+    alignItems: "center",
+    alignSelf: "center",
+    width: width / 1.1,
+    flexDirection: "row",
+    borderRadius: 10,
+    justifyContent: "space-between",
+  } ,
+  PracticeContainer:{
+    backgroundColor: "#1f233c",
+    width: width,
+    height: height,
+    justifyContent: "center",
+  }
+
 });
 
 export default GeneralStyles;
